@@ -11,3 +11,11 @@ https://hub.docker.com/_/postgres
 > docker exec -it postgres12 psql -U root
 
 ## database migrate
+
+## CURD
+database/sql: fast but mistakes cannot be caught until runtime  
+gorm: low code but slow on high load (gorm的运行速度比标准库慢3-5倍)  
+sqlx: fast & easy but mistakes cannot be caught until runtime  
+sqlc: automatic code generation, especially for Postgres
+
+### sqlc （）
