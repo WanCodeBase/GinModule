@@ -47,4 +47,9 @@ Durabilty
 
 **In Mysql**  
 - default level: RR
-- Using locking mechanism
+- Using locking mechanism  
+
+## Github Workflow
+
+1. Actions on the website
+2. 
