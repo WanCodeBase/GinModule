@@ -1,6 +1,6 @@
 module GinModule
 
-go 1.22.2
+go 1.23.0
 
 require (
 	github.com/bytedance/sonic v1.12.5 // indirect
