@@ -91,3 +91,47 @@ func TestStore_TransferTx(t *testing.T) {
 	assert.Equal(t, account1.Balance-int64(n)*amount, updateAccount1.Balance)
 	assert.Equal(t, account2.Balance+int64(n)*amount, updateAccount2.Balance)
 }
+
+func TestStore_TransferTxDeadlockTx(t *testing.T) {
+	store := NewStore(testDB)
+
+	account1 := _createAccount(t)
+	account2 := _createAccount(t)
+
+	n := 10
+	amount := int64(10)
+
+	// channel
+	errs := make(chan error)
+
+	for i := 0; i < n; i++ {
+		fromAccount, toAccount := account1, account2
+
+		if i%2 == 0 {
+			fromAccount, toAccount = account2, account1
+		}
+		go func() {
+			_, err := store.TransferTx(context.Background(), TransferTxParams{
+				FromAccountID: fromAccount.ID,
+				ToAccountID:   toAccount.ID,
+				Amount:        amount,
+			})
+			errs <- err
+		}()
+	}
+
+	for i := 0; i < n; i++ {
+		err := <-errs
+		assert.NoError(t, err)
+
+	}
+
+	updateAccount1, err := testQueries.GetAccount(context.Background(), account1.ID)
+	assert.NoError(t, err)
+
+	updateAccount2, err := testQueries.GetAccount(context.Background(), account2.ID)
+	assert.NoError(t, err)
+
+	assert.Equal(t, account1.Balance, updateAccount1.Balance)
+	assert.Equal(t, account2.Balance, updateAccount2.Balance)
+}

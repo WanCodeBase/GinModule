@@ -88,24 +88,28 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 		}
 
 		// update accounts' balance
-		fromAccount, err := queries.AddAccountBalance(ctx, AddAccountBalanceParams{
-			ID:     arg.FromAccountID,
-			Amount: arg.Amount * (-1),
-		})
-		if err != nil {
-			return err
+		// 预防死锁：确保获取锁的顺序是一致的 （eg.总是id小的对象先获取锁）
+		// Prevent deadlocks: Ensure that locks are acquired in the same order
+		if arg.FromAccountID < arg.ToAccountID {
+			result.FromAccount, result.ToAccount, err = store.addMoney(ctx, queries,
+				AddAccountBalanceParams{
+					ID:     arg.FromAccountID,
+					Amount: -1 * arg.Amount,
+				}, AddAccountBalanceParams{
+					ID:     arg.ToAccountID,
+					Amount: arg.Amount,
+				})
+		} else {
+			result.ToAccount, result.FromAccount, err = store.addMoney(ctx, queries,
+				AddAccountBalanceParams{
+					ID:     arg.ToAccountID,
+					Amount: arg.Amount,
+				}, AddAccountBalanceParams{
+					ID:     arg.FromAccountID,
+					Amount: -1 * arg.Amount,
+				})
 		}
 
-		toAccount, err := queries.AddAccountBalance(ctx, AddAccountBalanceParams{
-			ID:     arg.ToAccountID,
-			Amount: arg.Amount,
-		})
-		if err != nil {
-			return err
-		}
-
-		result.FromAccount = fromAccount
-		result.ToAccount = toAccount
 		result.Transfer = transfer
 		result.FromEntry = fromEntry
 		result.ToEntry = toEntry
@@ -116,4 +120,14 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 	}
 
 	return result, err
+}
+
+func (store *Store) addMoney(ctx context.Context, q *Queries, param1, param2 AddAccountBalanceParams) (account1, account2 Account, err error) {
+	account1, err = q.AddAccountBalance(ctx, param1)
+	if err != nil {
+		return
+	}
+
+	account2, err = q.AddAccountBalance(ctx, param2)
+	return
 }
