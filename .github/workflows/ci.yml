@@ -46,6 +46,10 @@ jobs:
         curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.darwin-amd64.tar.gz | tar xvz
         sudo mv migrate /usr/bin/
         which migrate
+        migrate -version
+
+    - name: Check runner architecture
+      run: uname -m
 
     - name: Run migrations
       run: make migrateup
