@@ -52,4 +52,4 @@ Durabilty
 ## Github Workflow
 
 1. Actions on the website
-2. 
+2. Coding .yml file to decide steps
