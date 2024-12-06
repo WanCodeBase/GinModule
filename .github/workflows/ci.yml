@@ -41,15 +41,16 @@ jobs:
     - name: Check out code into the Go module directly
       uses: actions/checkout@v4
 
-    - name: Install golang-migrate
-      run: |
-        curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.darwin-amd64.tar.gz | tar xvz
-        sudo mv migrate /usr/bin/
-        which migrate
-        migrate -version
-
     - name: Check runner architecture
       run: uname -m
+
+    - name: Install golang-migrate
+      run: |
+        curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.darwin-amd64.tar.gz -o migrate.tar.gz
+        tar -xvzf migrate.tar.gz -C /usr/bin
+        chmod+x /usr/bin/migrate
+        which migrate
+        migrate -version
 
     - name: Run migrations
       run: make migrateup
