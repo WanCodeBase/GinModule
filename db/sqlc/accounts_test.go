@@ -1,8 +1,8 @@
 package db
 
 import (
-	"GinModule/util"
 	"context"
+	"example.com/m/util"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
