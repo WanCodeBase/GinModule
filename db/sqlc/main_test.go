@@ -6,12 +6,9 @@ import (
 	"os"
 	"testing"
 
-	_ "github.com/lib/pq"
-)
+	"github.com/WanCodeBase/GinModule/util"
 
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:root@localhost:5432/simple_bank?sslmode=disable"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -20,10 +17,15 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	var err error
-	testDB, err = sql.Open(dbDriver, dbSource)
+	conf, err := util.LoadConfig("../../")
+	if err != nil {
+		log.Fatalln("load config failed:", err)
+		return
+	}
+	testDB, err = sql.Open(conf.DBDriver, conf.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
+		return
 	}
 
 	testQueries = New(testDB)

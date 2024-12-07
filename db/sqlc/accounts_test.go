@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"example.com/m/util"
+	"github.com/WanCodeBase/GinModule/util"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
