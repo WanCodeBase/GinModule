@@ -7,20 +7,25 @@ import (
 	"log"
 )
 
-// Store provides all functions to execute db queries & transactions
-type Store struct {
+type Store interface {
+	Querier
+	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+}
+
+// SQLStore provides all functions to execute db queries & transactions
+type SQLStore struct {
 	*Queries
 	db *sql.DB
 }
 
-func NewStore(db *sql.DB) *Store {
-	return &Store{
+func NewStore(db *sql.DB) Store {
+	return &SQLStore{
 		db:      db,
 		Queries: New(db),
 	}
 }
 
-func (store *Store) execTx(ctx context.Context, fn func(queries *Queries) error) error {
+func (store *SQLStore) execTx(ctx context.Context, fn func(queries *Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, nil) // default level: RC
 	if err != nil {
 		return err
@@ -58,7 +63,7 @@ TransferTx performs a money transfer one account to another
 3. and update accounts' balance
 within a single database transaction
 */
-func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
+func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 
 	err := store.execTx(ctx, func(queries *Queries) error {
@@ -122,7 +127,7 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 	return result, err
 }
 
-func (store *Store) addMoney(ctx context.Context, q *Queries, param1, param2 AddAccountBalanceParams) (account1, account2 Account, err error) {
+func (store *SQLStore) addMoney(ctx context.Context, q *Queries, param1, param2 AddAccountBalanceParams) (account1, account2 Account, err error) {
 	account1, err = q.AddAccountBalance(ctx, param1)
 	if err != nil {
 		return
