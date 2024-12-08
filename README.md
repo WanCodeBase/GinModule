@@ -53,3 +53,9 @@ Durabilty
 
 1. Actions on the website
 2. Coding .yml file to decide steps
+
+## gomock
+1. install: https://github.com/golang/mock
+2. vi ~/.zshrc & add export PATH=$PATH:~/go/bin
+3. source ~/.zshrc
+4. using which mockgen to make sure mockgen is valid.
