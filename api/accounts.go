@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	db "github.com/WanCodeBase/GinModule/db/sqlc"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	"net/http"
 )
 
@@ -24,6 +25,13 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		Currency: req.Currency,
 	})
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			switch pqErr.Code.Name() {
+			case "unique_violation", "foreign_key_violation":
+				ctx.JSON(http.StatusForbidden, errResponse(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, errResponse(err))
 		return
 	}

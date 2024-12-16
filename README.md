@@ -59,3 +59,8 @@ Durabilty
 2. vi ~/.zshrc & add export PATH=$PATH:~/go/bin
 3. source ~/.zshrc
 4. using which mockgen to make sure mockgen is valid.
+
+## hash password
+**{ALG}{Cost}{Salt}{Hash}**  
+e.g. $2a$10$dGIJ4fEL7jKAzzddDuwGSe3o9mTcO/Tv.3XwJsbJZHXOhXrjr01ce
+> password -- bcrypt hash (cost, salt) --> hashed_password

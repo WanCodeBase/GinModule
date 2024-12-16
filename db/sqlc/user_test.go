@@ -10,9 +10,12 @@ import (
 )
 
 func _createUser(t *testing.T) User {
+	password, err := util.HashedPassword(util.RandomString(8))
+	assert.NoError(t, err)
+	
 	arg := CreateUserParams{
 		Username:       util.RandomOwner(),
-		HashedPassword: "secret",
+		HashedPassword: password,
 		FullName:       util.RandomOwner(),
 		Email:          fmt.Sprintf("%s@example.com", util.RandomOwner()),
 	}
