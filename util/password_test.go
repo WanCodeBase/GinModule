@@ -13,10 +13,10 @@ func TestPassword(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, hashedPassword)
 
-	err = checkPassword(password1, hashedPassword)
+	err = CheckPassword(password1, hashedPassword)
 	assert.NoError(t, err)
 
 	password2 := RandomString(6)
-	err = checkPassword(password2, hashedPassword)
+	err = CheckPassword(password2, hashedPassword)
 	assert.EqualError(t, err, bcrypt.ErrMismatchedHashAndPassword.Error())
 }

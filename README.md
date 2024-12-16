@@ -16,7 +16,7 @@ https://hub.docker.com/_/postgres
 Atomicity  
 Consistency  
 Isolation  
-Durabilty
+Durability
 
 ### CURD
 **database/sql**: fast but mistakes cannot be caught until runtime  
@@ -56,9 +56,10 @@ Durabilty
 
 ## gomock
 1. install: https://github.com/golang/mock
-2. vi ~/.zshrc & add export PATH=$PATH:~/go/bin
-3. source ~/.zshrc
-4. using which mockgen to make sure mockgen is valid.
+2. vi ~/.zshrc 
+3. add export PATH=$PATH:~/go/bin
+4. source ~/.zshrc
+5. using which mockgen to make sure mockgen is valid.
 
 ## hash password
 **{ALG}{Cost}{Salt}{Hash}**  
