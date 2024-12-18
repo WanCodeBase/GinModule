@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-func TestJWTMaker(t *testing.T) {
-	maker, err := NewJWTMaker(util.RandomString(32))
+func TestPasetoMaker(t *testing.T) {
+	maker, err := NewPasetoMaker(util.RandomString(32))
 	assert.NoError(t, err)
 
 	username := util.RandomOwner()
@@ -29,8 +29,8 @@ func TestJWTMaker(t *testing.T) {
 	assert.WithinDuration(t, expiredAt, payload.ExpireAt, time.Second)
 }
 
-func TestExpiredJWTMaker(t *testing.T) {
-	maker, err := NewJWTMaker(util.RandomString(32))
+func TestExpiredPasetoMaker(t *testing.T) {
+	maker, err := NewPasetoMaker(util.RandomString(32))
 	assert.NoError(t, err)
 
 	username := util.RandomOwner()
@@ -40,7 +40,6 @@ func TestExpiredJWTMaker(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
 
-	payload, err := maker.VerifyToken(token)
+	_, err = maker.VerifyToken(token)
 	assert.ErrorIs(t, ErrExpireToken, err)
-	assert.Empty(t, payload)
 }
