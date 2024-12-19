@@ -76,7 +76,7 @@ func TestGetAccountApi(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			c.stubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			url := fmt.Sprintf("/account/%d", c.accountID)
@@ -166,7 +166,7 @@ func TestCreateAccountApi(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			c.stubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			url := fmt.Sprint("/account")
@@ -226,7 +226,7 @@ func TestListAccountsApi(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			c.stubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			url := "/accounts"
