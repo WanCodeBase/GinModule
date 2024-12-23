@@ -2,8 +2,10 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	db "github.com/WanCodeBase/GinModule/db/sqlc"
+	"github.com/WanCodeBase/GinModule/token"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -22,10 +24,18 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 		return
 	}
 
-	if !server.validateCurrency(ctx, req.FromAccountId, req.Currency) {
+	fromAccount, ok := server.validateCurrency(ctx, req.FromAccountId, req.Currency)
+	if !ok {
 		return
 	}
-	if !server.validateCurrency(ctx, req.ToAccountId, req.Currency) {
+	payload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if fromAccount.Owner != payload.Username {
+		err := errors.New("account owner is not match")
+		ctx.JSON(http.StatusUnauthorized, errResponse(err))
+		return
+	}
+
+	if _, ok := server.validateCurrency(ctx, req.ToAccountId, req.Currency); !ok {
 		return
 	}
 
@@ -46,21 +56,21 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (server *Server) validateCurrency(ctx *gin.Context, accountID int64, currency string) bool {
+func (server *Server) validateCurrency(ctx *gin.Context, accountID int64, currency string) (db.Account, bool) {
 	account, err := server.store.GetAccount(ctx, accountID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
-			return false
+			return account, false
 		}
 		ctx.JSON(http.StatusInternalServerError, errResponse(err))
-		return false
+		return account, false
 	}
 
 	if account.Currency != currency {
 		ctx.JSON(http.StatusBadRequest,
 			fmt.Sprintf("Currency cannot match: %s vs %s", account.Currency, currency))
-		return false
+		return account, false
 	}
-	return true
+	return account, true
 }

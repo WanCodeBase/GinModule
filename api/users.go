@@ -2,6 +2,8 @@ package api
 
 import (
 	"database/sql"
+	"errors"
+	"github.com/WanCodeBase/GinModule/token"
 	"net/http"
 	"time"
 
@@ -77,6 +79,12 @@ func (server *Server) getUser(ctx *gin.Context) {
 	var req getUserReq
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errResponse(err))
+		return
+	}
+	payload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if payload.Username != req.Username {
+		err := errors.New("account owner is not match")
+		ctx.JSON(http.StatusUnauthorized, errResponse(err))
 		return
 	}
 	user, err := server.store.GetUser(ctx, req.Username)

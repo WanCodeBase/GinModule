@@ -71,19 +71,19 @@ func TestDeleteAccount(t *testing.T) {
 }
 
 func TestListAccounts(t *testing.T) {
+	var lastUsername string
 	for i := 0; i < 6; i++ {
-		_createAccount(t)
+		account := _createAccount(t)
+		lastUsername = account.Owner
 	}
 
 	arg := ListAccountsParams{
+		Owner:  lastUsername,
 		Limit:  5,
-		Offset: 1,
+		Offset: 0,
 	}
 	accounts, err := testQueries.ListAccounts(context.Background(), arg)
 
 	assert.NoError(t, err)
-	assert.Equal(t, 5, len(accounts))
-	for _, a := range accounts {
-		assert.NotEmpty(t, a)
-	}
+	assert.Equal(t, 1, len(accounts))
 }
