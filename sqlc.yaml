@@ -3,7 +3,7 @@ packages:
     - name: "db"                 # package name
       path: "./db/sqlc"          # 生成的go code路径
       queries: "./db/query/"     # sql语句路径
-      schema: "./db/migrate/"  # 数据库架构
+      schema: "./db/migration/"  # 数据库架构
       engine: "postgresql"       # 什么数据库
       emit_json_tags: true
       emit_prepared_queries: false
